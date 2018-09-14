@@ -1,0 +1,7 @@
+C:\Users\nikit\source\repos\ModulPolynomial\ModulPolynomial\bin\Debug\ModulPolynomial.exe.config
+C:\Users\nikit\source\repos\ModulPolynomial\ModulPolynomial\bin\Debug\ModulPolynomial.exe
+C:\Users\nikit\source\repos\ModulPolynomial\ModulPolynomial\bin\Debug\ModulPolynomial.pdb
+C:\Users\nikit\source\repos\ModulPolynomial\ModulPolynomial\obj\Debug\ModulPolynomial.csprojAssemblyReference.cache
+C:\Users\nikit\source\repos\ModulPolynomial\ModulPolynomial\obj\Debug\ModulPolynomial.csproj.CoreCompileInputs.cache
+C:\Users\nikit\source\repos\ModulPolynomial\ModulPolynomial\obj\Debug\ModulPolynomial.exe
+C:\Users\nikit\source\repos\ModulPolynomial\ModulPolynomial\obj\Debug\ModulPolynomial.pdb
