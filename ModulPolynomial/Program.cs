@@ -93,6 +93,8 @@ namespace ModulPolynomial
                     if (tmp[i] != null && tmp[i] == "+0")//Удаляет одночлены с нулевыми коэффициентами
                         tmp[i] = null;
                 }
+                if (tmp.Length == 0)//Если массив пустой
+                    tmp = new string[] { "0" };
                 if (tmp[0] != null && tmp[0][0] == '+')//Избавление от + в первом одночлене
                     tmp[0] = tmp[0].Remove(0, 1);
                 s = string.Join("", tmp);//Объединение одночленов
