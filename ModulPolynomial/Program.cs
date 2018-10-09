@@ -1,41 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ModulPolynomial
 {
-    class Program
+    static class Program
     {
         static void Main(string[] args)
         {
             while (true)
             {
                 Console.Write("Введите степень первого многочлена: ");
-                Polynom c1 = new Polynom { p = new double[Convert.ToInt32(Console.ReadLine()) + 1] };
-                for (int i = 0; i < c1.p.Length; i++)
+                Polynom c1 = new Polynom { P = new double[Convert.ToInt32(Console.ReadLine()) + 1] };
+                for (int i = 0; i < c1.P.Length; i++)
                 {
                     Console.Write($"Введите {i}-й коэффициент: ");
-                    c1.p[i] = Convert.ToDouble(Console.ReadLine());
-                    if (i == c1.p.Length - 1 && c1.p[i] == 0)
-                    {
-                        Console.WriteLine("Коэффициент последнего одночлена не может ровняться нулю");
-                        i--;
-                    }
+                    c1.P[i] = Convert.ToDouble(Console.ReadLine());
+                    if (i == c1.P.Length - 1 && c1.P[i] == 0)
+                        Console.WriteLine("Коэффициент последнего одночлена не может ровняться нулю", i--);
                 }
                 Console.Clear();
                 Console.Write("Введите степень второго многочлена: ");
-                Polynom c2 = new Polynom { p = new double[Convert.ToInt32(Console.ReadLine()) + 1] };
-                for (int i = 0; i < c2.p.Length; i++)
+                Polynom c2 = new Polynom { P = new double[Convert.ToInt32(Console.ReadLine()) + 1] };
+                for (int i = 0; i < c2.P.Length; i++)
                 {
                     Console.Write($"Введите {i}-й коэффициент: ");
-                    c2.p[i] = Convert.ToDouble(Console.ReadLine());
-                    if (i == c2.p.Length - 1 && c2.p[i] == 0)
-                    {
-                        Console.WriteLine("Коэффициент последнего одночлена не может ровняться нулю");
-                        i--;
-                    }
+                    c2.P[i] = Convert.ToDouble(Console.ReadLine());
+                    if (i == c2.P.Length - 1 && c2.P[i] == 0)
+                        Console.WriteLine("Коэффициент последнего одночлена не может ровняться нулю", i--);
                 }
                 Console.Clear();
                 Console.WriteLine($"Первый многочлен: {c1.S}\nВторой многочлен: {c2.S}\n");
@@ -46,10 +36,10 @@ namespace ModulPolynomial
 
                 Console.WriteLine($"Произведение многочленов равно: {Polynom.Multiplication(c1, c2).S}\n");
 
-                if (c1.p.Length >= c2.p.Length)
-                    Console.WriteLine($"Деление многочленов с остатком:\nЧастное: {Polynom.Divide(c1, c2, 'q').S}, остаток: {Polynom.Divide(c1, c2, 'r').S}\n");
+                if (c1.P.Length > 1 && c2.P.Length > 1 && c1.P.Length >= c2.P.Length)
+                    Console.WriteLine($"Деление многочленов с остатком:\nЧастное: {Polynom.Divide(c1, c2, Remnant.Quotient).S}, остаток: {Polynom.Divide(c1, c2, Remnant.Remaider).S}\n");
                 else
-                    Console.WriteLine("Деление невозможно поскольку второй многочлен имеет большую степень.");
+                    Console.WriteLine("Деление невозможно.\n");
 
                 Console.WriteLine($"Отношение многочленов:\nA == B - {Polynom.Eq(c1, c2)}\nA != B - {Polynom.NoEq(c1, c2)}\n");
 
@@ -57,139 +47,169 @@ namespace ModulPolynomial
                 int k = Convert.ToInt32(Console.ReadLine());
                 Console.WriteLine($"Возведение многочленов в степень k = {k}, равно:\nA) {Polynom.DegreeK(c1, k).S}\nB) {Polynom.DegreeK(c2, k).S}\n");
 
-                Console.WriteLine($"Производные многочленов равны:\n{Polynom.Derivative(c1).S}\n{Polynom.Derivative(c2).S}\n");
+                Console.WriteLine($"Производные многочленов равны:\nA) {Polynom.Derivative(c1).S}\nB) {Polynom.Derivative(c2).S}\n");
 
                 Console.Write("Введите значение точки x0: ");
                 double x0 = Convert.ToDouble(Console.ReadLine());
-                Console.WriteLine($"Значение многочленов в точке x0 = {x0}, равно: {Polynom.SubstitutionOfX(Polynom.Derivative(c1), x0)}, {Polynom.SubstitutionOfX(Polynom.Derivative(c2), x0)}\n");
+                Console.WriteLine($"Значение многочленов в точке x0 = {x0}, равно:\nA) {Polynom.SubstitutionOfX(Polynom.Derivative(c1), x0)}\nB) {Polynom.SubstitutionOfX(Polynom.Derivative(c2), x0)}");
 
                 Console.ReadKey();
                 Console.Clear();
             }
         }
     }
-    class Polynom
+    /// <summary>
+    /// Перечисление для указания необходимого избытка при делении: частного или остатка.
+    /// </summary>
+    public enum Remnant { Quotient, Remaider }
+    /// <summary>
+    /// Предоставляет набор подпрограмм для выполнения операций с многочленами от одной переменной.
+    /// </summary>
+    public class Polynom
     {
-        public double[] p;
-        string s = null;
-        public string S
+        /// <summary>
+        /// Многочлен представлен следующим типом, коэффициент одночлена aₙxⁿ - элемент массива с индексом n, т.о. индекс соответствует степени x.
+        /// </summary>
+        public double[] P { get; set; }//массив всех коэф многочлена
+        /// <summary>
+        /// Возвращает строку в стандартном виде многочлена: "aₒ + a₁x + a₂x² + ... + aₙxⁿ".
+        /// </summary>
+        public string S //ну задумка была проще
         {
             get
             {
-                string[] tmp = new string[p.Length];//Временный массив одночленов
-                for (int i = 0; i < tmp.Length; i++)
-                {
-                    tmp[i] = $"{p[i]}x^{i}";//Определение одночлена
-                    if (tmp[i] != null && tmp[i][0] != '-')//Вставка в одночлен +, если нет -
-                        tmp[i] = tmp[i].Insert(0, "+");
-                    if (tmp[i] != null && tmp[i].Contains("^0"))//Избавляет одночлен от нулевой степени
-                        tmp[i] = tmp[i].Remove(tmp[i].Length - 3);
-                    if (tmp[i] != null && tmp[i].Contains("0x") && tmp[i][1] == '0')//Удаляет одночлены с нулевыми коэффициентами
-                        tmp[i] = null;
-                    if (tmp[i] != null && tmp[i].Contains("1x") && tmp[i][1] == '1' && tmp[i][2] != '1')//Удаляет единичные коэффициенты
-                        tmp[i] = tmp[i].Remove(1, 1);
-                    if (tmp[i] != null && tmp[i].Contains("^1"))//Избавляет одночлен от единичной степени
-                        tmp[i] = tmp[i].Remove(tmp[i].Length - 2);
-                    if (tmp[i] != null && tmp[i] == "+0")//Удаляет одночлены с нулевыми коэффициентами
-                        tmp[i] = null;
-                }
-                if (tmp.Length == 0)//Если массив пустой
-                    tmp = new string[] { "0" };
-                if (tmp[0] != null && tmp[0][0] == '+')//Избавление от + в первом одночлене
-                    tmp[0] = tmp[0].Remove(0, 1);
-                s = string.Join("", tmp);//Объединение одночленов
-                if (s != "" && s[0] == '+')//Удаление плюса в начале
-                    s = s.Remove(0, 1);
-                s = s.Replace("+", " + ");//Марафет
-                if (s != "" && s[0] == '-')
-                {
-                    s = s.Remove(0, 1);
-                    s = s.Replace("-", " - ");
-                    s = s.Insert(0, "-");
-                }
-                else
-                    s = s.Replace("-", " - ");
-                if (s == "")//Ну так надо
-                    s = "0";
-                return s;
+                string[] tmp = new string[P.Length];//Временный массив одночленов
+                for (int i = 0; i < tmp.Length; i++) //время 5:11
+                    tmp[i] = P[i] != 0 ? ((P[i] > 0 ? (P[i] == 1 ? (i != 0 ? " + " : " + 1") : $" + {P[i]}") : (P[i] == -1 ? (i != 0 ? " - " : " - 1") : $" - {-1 * P[i]}")) + (i > 0 ? (i > 1 ? $"x^{i}" : "x") : "")) : "";
+                string s = string.Join("", tmp) == "" ? " + 0" : string.Join("", tmp);//Объединение одночленов
+                return s[1] == '+' ? s.Remove(0, 3) : "-" + s.Remove(0, 3);//удаление начальных пропусков
             }
         }
-
+        /// <summary>
+        /// Вычисялет сумму двух заданных многочленов.
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static Polynom Sum(Polynom a, Polynom b)
         {
-            Polynom res = new Polynom { p = new double[a.p.Length >= b.p.Length ? a.p.Length : b.p.Length] };
-            for (int i = 0; i < (a.p.Length >= b.p.Length ? a.p.Length : b.p.Length); i++)
-                res.p[i] = i < a.p.Length ? a.p[i] : 0;
-            for (int i = 0; i < b.p.Length; i++)
-                res.p[i] += b.p[i];
+            Polynom res = new Polynom { P = new double[a.P.Length >= b.P.Length ? a.P.Length : b.P.Length] };
+            for (int i = 0; i < (a.P.Length >= b.P.Length ? a.P.Length : b.P.Length); i++)
+                res.P[i] = (i < a.P.Length ? a.P[i] : 0) + (i < b.P.Length ? b.P[i] : 0);
             return res;
         }
+        /// <summary>
+        /// Вычисляет разность двух заданных многочленов.
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static Polynom Subtract(Polynom a, Polynom b)
         {
-            Polynom res = new Polynom { p = new double[a.p.Length >= b.p.Length ? a.p.Length : b.p.Length] };
-            for (int i = 0; i < (a.p.Length >= b.p.Length ? a.p.Length : b.p.Length); i++)
-                res.p[i] = i < a.p.Length ? a.p[i] : 0;
-            for (int i = 0; i < b.p.Length; i++)
-                res.p[i] -= b.p[i];
+            Polynom res = new Polynom { P = new double[a.P.Length >= b.P.Length ? a.P.Length : b.P.Length] };
+            for (int i = 0; i < (a.P.Length >= b.P.Length ? a.P.Length : b.P.Length); i++)
+                res.P[i] = (i < a.P.Length ? a.P[i] : 0) - (i < b.P.Length ? b.P[i] : 0);
             return res;
         }
+        /// <summary>
+        /// Вычисляет произведение двух заданных многочленов.
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static Polynom Multiplication(Polynom a, Polynom b)
         {
-            Polynom res = new Polynom { p = new double[a.p.Length * b.p.Length] };
-            for (int i = 0; i < res.p.Length; i++)
-                res.p[i] = 0;
-            for (int i = 0; i < a.p.Length; i++)
-                for (int j = 0; j < b.p.Length; j++)
-                    res.p[i + j] += a.p[i] * b.p[j];
+            Polynom res = new Polynom { P = new double[a.P.Length * b.P.Length] };
+            for (int i = 0; i < a.P.Length; i++)
+                for (int j = 0; j < b.P.Length; j++)
+                    res.P[i + j] += a.P[i] * b.P[j];
             return res;
         }
-        public static Polynom Divide(Polynom a, Polynom b, char d)
-        {// a - didvidend, b - divisor
-            Polynom r = new Polynom { p = (double[])a.p.Clone() };//remaider
-            Polynom q = new Polynom { p = new double[a.p.Length - b.p.Length + 1] };//quotient
-            for (int i = 0; i < q.p.Length; i++)
-            {
-                double tmp = r.p[r.p.Length - i - 1] / b.p[b.p.Length - 1];
-                q.p[q.p.Length - i - 1] = tmp;
-                for (int j = 0; j < b.p.Length; j++)
-                    r.p[r.p.Length - i - j - 1] -= tmp * b.p[b.p.Length - j - 1];
-            }
-            if (d == 'q')
-                return q;
-            else
-                return r;
-        }
-        public static bool Eq(Polynom a, Polynom b)
+        /// <summary>
+        /// Вычисляет отношение двух заданных многочленов, с возможностью получить частное или остаток.
+        /// </summary>
+        /// <param name="dvd - dividend - делимое"></param>
+        /// <param name="dvs - divisor - делитель"></param>
+        /// <param name="rem"></param>
+        /// <returns></returns>
+        public static Polynom Divide(Polynom dvd, Polynom dvs, Remnant rem)
         {
-            if (a.p.Length != b.p.Length)
+            if (dvs.P.Length > dvd.P.Length)
+                return new Polynom { P = new double[0] };
+            Polynom q = new Polynom { P = new double[dvd.P.Length - dvs.P.Length + 1] };
+            Polynom r = new Polynom { P = (double[])dvd.P.Clone() };
+            for (int i = 0; i < q.P.Length; i++)
+            {
+                double tmp = r.P[r.P.Length - i - 1] / dvs.P[dvs.P.Length - 1];       //dvd - dividend - делимое
+                q.P[q.P.Length - i - 1] = tmp;                                        //dvs - divisor - делитель
+                for (int j = 0; j < dvs.P.Length; j++)                                  //q - quotient - частное
+                    r.P[r.P.Length - i - j - 1] -= tmp * dvs.P[dvs.P.Length - j - 1];   //r - remaider - остаток
+            }
+            if (rem == Remnant.Quotient)
+                return q;
+            else if (rem == Remnant.Remaider)
+                return r;
+            else
+                return new Polynom { P = new double[0] };
+        }
+        /// <summary>
+        /// Находит являются ли заданные многочлены равными.
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static bool Eq(Polynom left, Polynom right)
+        {
+            if (left.P.Length != right.P.Length)
                 return false;
-            for (int i = 0; i < a.p.Length; i++)
-                if (a.p[i] != b.p[i])
+            for (int i = 0; i < left.P.Length; i++)
+                if (left.P[i] != right.P[i])
                     return false;
             return true;
         }
-        public static bool NoEq(Polynom a, Polynom b) => !Eq(a, b);
-        public static Polynom DegreeK(Polynom a, int k)
+        /// <summary>
+        /// Находит являются ли заданные многочлены неравными.
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static bool NoEq(Polynom left, Polynom right) => !Eq(left, right);
+        /// <summary>
+        /// Возводит заданный многочлен в степень <paramref name="deg"/>.
+        /// </summary>
+        /// <param name="polynom"></param>
+        /// <param name="deg"></param>
+        /// <returns></returns>
+        public static Polynom DegreeK(Polynom polynom, int deg)
         {
-            Polynom res = a;
-            for (int i = 1; i < k; i++)
-                res = Multiplication(res, a);
+            Polynom res = polynom;
+            for (int i = 1; i < deg; i++)
+                res = Multiplication(res, polynom);
             return res;
         }
-        public static Polynom Derivative(Polynom a)
+        /// <summary>
+        /// Вычисляет производную функцию заданного многочлена.
+        /// </summary>
+        /// <param name="polynom"></param>
+        /// <returns></returns>
+        public static Polynom Derivative(Polynom polynom)
         {
-            Polynom res = new Polynom { p = new double[a.p.Length - 1] };
-            for (int i = 0; i < res.p.Length; i++)
-                res.p[i] = a.p[i];
-            for (int i = 1; i <= res.p.Length; i++)
-                res.p[i - 1] = a.p[i] * i;
+            Polynom res = new Polynom { P = new double[polynom.P.Length - 1] };
+            for (int i = 1; i <= res.P.Length; i++)
+                res.P[i - 1] = polynom.P[i] * i;
             return res;
         }
-        public static double SubstitutionOfX(Polynom a, double x0)
+        /// <summary>
+        /// Вычисляет значение заданного многочлена в точке <paramref name="xₒ"/>.
+        /// </summary>
+        /// <param name="polynom"></param>
+        /// <param name="xₒ"></param>
+        /// <returns></returns>
+        public static double SubstitutionOfX(Polynom polynom, double x)
         {
             double res = 0;
-            for (int i = 0; i < a.p.Length; i++)
-                res += a.p[i] * Math.Pow(x0, i);
+            for (int i = 0; i < polynom.P.Length; i++)
+                res += polynom.P[i] * Math.Pow(x, i);
             return res;
         }
     }

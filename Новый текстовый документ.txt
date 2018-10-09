@@ -1,0 +1,36 @@
+                tmp[0] = tmp[0] != "" ? (tmp[0][1] == '+' ? tmp[0].Remove(0, 3) : tmp[0].Replace(" ", "")) : "";
+                for (int i = 0; i < tmp.Length; i++)
+                {
+                    tmp[i] = $"{p[i]}x^{i}";//Определение одночлена
+                    if (tmp[i] != null && tmp[i][0] != '-')//Вставка в одночлен +, если нет -
+                        tmp[i] = tmp[i].Insert(0, "+");
+                    if (tmp[i] != null && tmp[i].Contains("^0"))//Избавляет одночлен от нулевой степени
+                        tmp[i] = tmp[i].Remove(tmp[i].Length - 3);
+                    if (tmp[i] != null && tmp[i].Contains("0x") && tmp[i][1] == '0')//Удаляет одночлены с нулевыми коэффициентами
+                        tmp[i] = null;
+                    if (tmp[i] != null && tmp[i].Contains("1x") && tmp[i][1] == '1' && tmp[i][2] != '1')//Удаляет единичные коэффициенты
+                        tmp[i] = tmp[i].Remove(1, 1);
+                    if (tmp[i] != null && tmp[i].Contains("^1"))//Избавляет одночлен от единичной степени
+                        tmp[i] = tmp[i].Remove(tmp[i].Length - 2);
+                    if (tmp[i] != null && tmp[i] == "+0")//Удаляет одночлены с нулевыми коэффициентами
+                        tmp[i] = null;
+                }
+                if (tmp.Length == 0)//Если массив пустой
+                    tmp = new string[] { "0" };
+                if (tmp[0] != null && tmp[0][0] == '+')//Избавление от + в первом одночлене
+                    tmp[0] = tmp[0].Remove(0, 1);
+                string s = string.Join("", tmp);//Объединение одночленов
+                if (s != "" && s[0] == '+')//Удаление плюса в начале
+                    s = s.Remove(0, 1);
+                s = s.Replace("+", " + ");//Марафет
+                if (s != "" && s[0] == '-')
+                {
+                    s = s.Remove(0, 1);
+                    s = s.Replace("-", " - ");
+                    s = s.Insert(0, "-");
+                }
+                else
+                    s = s.Replace("-", " - ");
+                if (s == "")//Ну так надо
+                    s = "0";
+                return s;
