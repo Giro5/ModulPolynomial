@@ -1,4 +1,3 @@
-                tmp[0] = tmp[0] != "" ? (tmp[0][1] == '+' ? tmp[0].Remove(0, 3) : tmp[0].Replace(" ", "")) : "";
                 for (int i = 0; i < tmp.Length; i++)
                 {
                     tmp[i] = $"{p[i]}x^{i}";//Определение одночлена
